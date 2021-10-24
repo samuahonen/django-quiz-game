@@ -1,18 +1,27 @@
 from django.db import models
 from django.db.models.fields import CharField
 import secrets
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 class Question(models.Model):
     question = models.CharField(max_length=50)
-    correct_answer = models.CharField(max_length=50)
-    wrong_answer1 = models.CharField(max_length=50)
-    wrong_answer2 = models.CharField(max_length=50)
+    answer1 = models.CharField(max_length=50)
+    answer2 = models.CharField(max_length=50)
+    answer3 = models.CharField(max_length=50)
+
+    correct_answer = models.IntegerField(
+        default=1,
+        validators=[
+            MaxValueValidator(3),
+            MinValueValidator(1)
+        ]
+     )
 
     
 
     def __str__(self):
-        return self.question
+        return f"ID: {self.id}, Question: {self.question}"
 
 class Game(models.Model):
     name = models.CharField(max_length=50)
@@ -39,4 +48,5 @@ class Player(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Name: {self.name}, Score {self.score}"
+        return f"Name: {self.name}, Game: {self.game.name}, Score {self.score}"
+
