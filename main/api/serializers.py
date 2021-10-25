@@ -25,3 +25,12 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ["name","score"]
+
+class CreateQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"
+    
+class CreateGameSerializer(serializers.Serializer):
+    questions = CreateQuestionSerializer(many=True)
+    name = serializers.CharField(max_length=50)

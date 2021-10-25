@@ -8,9 +8,7 @@ from .serializers import *
 from rest_framework import status
 # Create your views here.
 
-class Test(APIView):
-    def get(self, request):
-        return Response("toimii")
+
 
 
 class GameAPI(APIView):
@@ -71,4 +69,18 @@ class AllStatsAPI(APIView):
         players = Player.objects.filter(game=game.id).order_by("-score")
         serializer = PlayerSerializer(players,many=True)
         return Response(serializer.data)
+
+class CreateGameAPI(APIView):
+    def post(self,request):
+        serializers = CreateGameSerializer(data=request.data)
+        if not serializers.is_valid():
+            return Response({"detail":"something missing"},status=status.HTTP_404_NOT_FOUND)
+        all_questions = []
+        for i in request.data["questions"]:
+            question = Question.objects.create(question=i["question"],answer1=i["answer1"],answer2=i["answer2"],answer3=i["answer3"],correct_answer=i["correct_answer"])
+            all_questions.append(question)
+        game = Game.objects.create(name=request.data["name"])
+        for i in all_questions:
+            game.questions.add(i)
+        return Response({"code":game.code})
         
